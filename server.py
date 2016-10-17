@@ -16,11 +16,15 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         if chops[0] == 'REGISTER':
             client_data[chops[1]] = chops[2]
             client_data['ip'] = self.client_address[0]
+            
+            if chops[4] == 'Expires':
+                del client_data['sip', 'ip']
         
-        print("El cliente nos manda: ", data)
+        print("El cliente nos manda:" + '\r\n' + data)
         print('IP: ', self.client_address[0])
         print('Puerto: ', self.client_address[1])
         print('Los datos del cliente son:', client_data)
+        print()
 
 if __name__ == "__main__":
 
