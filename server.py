@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 import socketserver
 import sys
+import json
 
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
 
-    client_dicc = {}
+    client_list = []
     
     def handle(self):        
         self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n") 
@@ -15,16 +16,24 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         data = line.decode('utf-8')
         chops = data.split(' ')
         if chops[0] == 'REGISTER':
-            self.client_dicc[chops[1][4:]] = self.client_address[0]
+            self.client_list.append([chops[1][4:],
+                                    {"address": self.client_address[0],
+                                     "expires": chops[4][:-4]}])
             if chops[3][2:-1] == 'Expires':
                 if chops[4][:-4] == '0':
-                    del self.client_dicc[chops[1][4:]]
+                    pass #Buscar como eliminar elementos de una lista        
+            
         print("El cliente nos manda:" + '\r\n' + data)
         print('IP: ', self.client_address[0])
         print('Puerto: ', self.client_address[1])
-        print('Los datos del cliente son:', self.client_dicc)
-        print()
-
+        print('Los clientes existentes son:', self.client_list)
+        
+        self.register2json()
+        
+    def register2json(self):
+        json_file = open('registered.json', 'w')
+        json.dump(self.client_list, json_file)
+        
 if __name__ == "__main__":
 
     serv = socketserver.UDPServer(('', int(sys.argv[1])), SIPRegisterHandler)
