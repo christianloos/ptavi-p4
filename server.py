@@ -3,6 +3,7 @@
 import socketserver
 import sys
 import json
+import time
 
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
@@ -15,13 +16,17 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         line = self.rfile.read()
         data = line.decode('utf-8')
         chops = data.split(' ')
+        hora = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time()))
+        
         if chops[0] == 'REGISTER':
-            self.client_list.append([chops[1][4:],
-                                    {"address": self.client_address[0],
-                                     "expires": chops[4][:-4]}])
-            if chops[3][2:-1] == 'Expires':
-                if chops[4][:-4] == '0':
-                    pass #Buscar como eliminar elementos de una lista        
+            client = [chops[1][4:],
+                     {"address": self.client_address[0],
+                      "expires": str(hora) + ' +' + chops[3][:-4]}]
+            self.client_list.append(client)
+            print(chops[2][8:-1])
+            if chops[2][9:-1] == 'Expires':
+                if chops[3][:-4] == '0':
+                    self.client_list.remove(client)        
             
         print("El cliente nos manda:" + '\r\n' + data)
         print('IP: ', self.client_address[0])
@@ -32,7 +37,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         
     def register2json(self):
         json_file = open('registered.json', 'w')
-        json.dump(self.client_list, json_file)
+        json.dump(self.client_list, json_file, indent = '\t')
         
 if __name__ == "__main__":
 
