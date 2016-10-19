@@ -12,7 +12,7 @@ except:
     sys.exit("Usage: client.py ip puerto register sip_address expires_value.")
 
 chops = line.split(' ')
-sip_str = ' SIP/2.0 \r\n'
+sip_str = ' SIP/2.0\r\n'
 expires_str = 'Expires: ' + expires_value + '\r\n\r\n'
 if sys.argv[3] == 'register':
         line = str(chops[0].upper() + ' sip:' + chops[1] + sip_str + expires_str)
