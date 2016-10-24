@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+"""
+Programa servidor UDP-SIP
+"""
+
 import socketserver
 import sys
 import json
@@ -11,6 +15,11 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     client_list = []
 
     def handle(self):
+        """
+        Método manejador, recibe y administra peticiones REGISTER de
+        los clientes y controla los tiempos de expiración de estos
+        """
+
         self.json2registered()
 
         line = self.rfile.read()
@@ -44,10 +53,19 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
 
     def register2json(self):
+        """
+        Imprime nuestra lista de clientes en un fichero json
+        """
+
         json_file = open('registered.json', 'w')
         json.dump(self.client_list, json_file, indent='\t')
 
     def json2registered(self):
+        """
+        Comprueba si ya existe un fichero json del que
+        importar los clientes
+        """
+
         try:
             with open('registered.json') as client_file:
                 self.client_list = json.load(client_file)
