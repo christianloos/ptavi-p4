@@ -15,7 +15,7 @@ chops = line.split(' ')
 sip_str = ' SIP/2.0\r\n'
 expires_str = 'Expires: ' + expires_value + '\r\n\r\n'
 if sys.argv[3] == 'register':
-        line = str(chops[0].upper() + ' sip:' + chops[1] + sip_str + expires_str)
+    line = str(chops[0].upper() + ' sip:' + chops[1] + sip_str + expires_str)
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     my_socket.connect((SERVER, PORT))
